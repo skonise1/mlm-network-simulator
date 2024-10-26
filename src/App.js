@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { auth } from "./firebaseConfig"; // Firebase Auth
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  // Listen for changes in the authentication state (logged in/logged out)
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user); // User is logged in
+      } else {
+        setUser(null); // User is logged out
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>MLM Network Simulator</h1>
+      {/* If the user is logged in, show the Dashboard and AddDownline components. Otherwise, show the Login form */}
+      {user ? (
+        <div>
+          <Dashboard />
+          
+        </div>
+      ) : (
+        <Login />
+      )}
     </div>
   );
 }
